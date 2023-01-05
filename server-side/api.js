@@ -12,6 +12,9 @@ const {
     updateEnvelopeByIndex
 } = require("./middleware");
 
+// spendRouter
+const spendRouter = require("./spend");
+apiRouter.use("/spend", spendRouter)
 
 // GET all
 apiRouter.get("/", (req, res) =>{
@@ -20,8 +23,8 @@ apiRouter.get("/", (req, res) =>{
 
 // GET categoryName
 apiRouter.get("/:categoryName", (req, res, next) =>{
-    const envelope = req.params.categoryName;
-    res.send(getEnvelopeBycategory(envelope));
+    const envelopeParam = req.params.categoryName;
+    res.send(getEnvelopeBycategory(envelopeParam));
 });
 
 // POST >> db.js
