@@ -1,21 +1,21 @@
-// dataBase where all envelops are stored
-const envelops = [];
+// dataBase where all envelopes are stored
+const envelopes = [];
 
 
 const getEnvelopeBycategory = (value)=>{
-    const matchedEnvelope = envelops.filter(envelope =>{
+    const matchedEnvelope = envelopes.filter(envelope =>{
         if(envelope.category === value){
             return envelope
         }
     });
     // checks if 'matchedEnvelop' is empty 
     if (matchedEnvelope.length === 0) {
-      return "No envelops found with matching category";
+      return "No envelopes found with matching category";
     };
     return matchedEnvelope;
 };
 
 module.exports = {
-    envelops,
+    envelopes,
     getEnvelopeBycategory
 };
