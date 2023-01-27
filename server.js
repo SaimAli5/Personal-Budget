@@ -4,15 +4,15 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 
 const PORT = process.env.PORT || 3000;
-
 //cors
 app.use(cors());
 // bodyParser
 app.use(bodyParser.json());
 
+
 // Import & mount API router 
-const apiRouter = require('./api');
-app.use("/api", apiRouter);
+const apiRouter = require('./server/api');
+app.use("/API", apiRouter);
 
 // Server listening 
 app.listen(PORT, ()=>{

@@ -1,0 +1,343 @@
+openapi: 3.0.3
+info:
+  title: Personal Budget
+  version: 1.0.0
+  description: >-
+    This API allows users to track and manage their personal budget. It allows
+    users to create spending categories and allocate budgets for each category.
+    Users can then track their spending by updating the amount they have spent
+    in each category, and the app will subtract that amount from the allocated
+    budget. This helps users stay within their budget and make informed
+    financial decisions.
+
+
+    Technologies:
+      - Node.js
+      - Express
+      - JavaScript
+      
+    Collaborators:
+
+    - [Saim Ali Nadeem](https://github.com/SaimAli5)
+
+    - [Garrett Berg](https://github.com/Daktic)
+paths:
+  /API/spending-category:
+    get:
+      summary: 'Get all spending categories data '
+      description: >-
+        Retrieve all spending categories and their allocated budget from the
+        database.
+      operationId: getAllCategory
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                All spending categories:
+                  value: |-
+                    [
+                       {
+                         "id": 1,
+                         "category": "gas",
+                         "budget": 100
+                       },
+                       {
+                         "id": 2,
+                         "category": "groceries",
+                         "budget": 250
+                       },
+                       {
+                         "id": 3,
+                         "category": "bills",
+                         "budget": 400
+                       }
+                    ]
+          description: Successful operation
+        '204':
+          description: No spending category found.
+      tags:
+        - Spending Category
+    post:
+      summary: Add new spending category
+      description: Add new spending category with budget in database
+      operationId: AddNewCategory
+      requestBody:
+        description: A new spending category
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/spending_category'
+        required: true
+      responses:
+        '201':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Category has been created.
+          description: Successful operation
+        '400':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Error:
+                  value: Invalid Argument
+          description: Invalid Argument Provided
+      tags:
+        - Spending Category
+  /API/spending-category/{categoryname}:
+    get:
+      summary: Get spending category by name
+      description: Retrieve single spending category data from database
+      operationId: getCategoryByName
+      parameters:
+        - name: categoryname
+          in: path
+          description: >-
+            Category name that needs to be fetched from database. Use "gas" for
+            testing.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                Requested spending category:
+                  value: |-
+                    {
+                      "id": 1,
+                      "category": "gas",
+                      "budget": 100
+                    }
+          description: Successful operation
+        '204':
+          description: No spending category found.
+      tags:
+        - Spending Category
+    put:
+      summary: Updates a spending category
+      description: >-
+        Updates the state of a spending category with a matching id from the
+        database.
+      operationId: updateNewCategory
+      parameters:
+        - name: categoryname
+          in: path
+          description: Category name that needs to be updated in database.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update on existing spending category
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/spending_category'
+        required: true
+      responses:
+        '200':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Category has been updated.
+          description: Successful operation
+        '400':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Error:
+                  value: Invalid Argument
+          description: Invalid Argument Provided
+      tags:
+        - Spending Category
+    delete:
+      summary: Deletes a spending category
+      description: Deletes an order with a matching name from the database.
+      operationId: deleteSelectedCategory
+      parameters:
+        - name: categoryname
+          in: path
+          description: Category name that needs to be deleted from database.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Category has been deleted.
+          description: Successful operation
+        '400':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Error:
+                  value: Invalid Argument
+          description: Invalid Argument Provided
+      tags:
+        - Spending Category
+  /API/transactions:
+    get:
+      summary: Get all transactions
+      description: Retrieve all transactions data from database.
+      operationId: getAllTransactions
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                All spending categories:
+                  value: |-
+                    [
+                       {
+                         "id": 1,
+                         "date": "2022-11-20",
+                         "category": "gas",
+                         "payment ": 60
+                       },
+                       {
+                         "id": 2,
+                         "date": "2022-12-05",
+                         "category": "groceries",
+                         "payment ": 200
+                       },
+                       {
+                         "id": 3,
+                         "date": "2023-01-05",
+                         "category": "bills",
+                         "payment ": 400
+                       }
+                    ]
+          description: Successful operation
+        '204':
+          description: No transaction found.
+      tags:
+        - Transactions
+    post:
+      summary: Add new transaction
+      description: Add new transaction and update the required category accordingly.
+      operationId: addNewTransaction
+      requestBody:
+        description: A new spending category
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/transaction'
+        required: true
+      responses:
+        '204':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Transaction has been added.
+          description: Successful operation
+        '400':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Error:
+                  value: Invalid Argument
+          description: Invalid Argument Provided
+      tags:
+        - Transactions
+  /API/transactions/{transactionId}:
+    put:
+      summary: Update a transaction data
+      description: >-
+        Update existing transaction by id from  database, which will also alter
+        spending category related to it.
+      operationId: updateTransaction
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction with given Id needs to be updated in database.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Update on existing transaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/transaction'
+        required: true
+      responses:
+        '200':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Transaction has been updated.
+          description: Successful operation
+        '400':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Error:
+                  value: Invalid Argument
+          description: Invalid Argument Provided
+      tags:
+        - Transactions
+    delete:
+      summary: Deletes a transaction
+      description: >-
+        Deletes transaction by given Id and updates the spending category if any
+        effected by the transaction.
+      operationId: deleteTransaction
+      parameters:
+        - name: transactionId
+          in: path
+          description: Transaction with given Id needs to be deleted from database.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Message:
+                  value: Transaction has been deleted.
+          description: Successful operation
+        '400':
+          content:
+            text/plain; charset=utf-8:
+              examples:
+                Error:
+                  value: Invalid Argument
+          description: Invalid Argument Provided
+      tags:
+        - Transactions
+components:
+  schemas:
+    spending_category:
+      type: object
+      properties:
+        id:
+          type: integer
+        category:
+          type: string
+        budget:
+          type: integer
+      xml:
+        name: spending_category
+    transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        category:
+          type: string
+        payment:
+          type: integer
+      xml:
+        name: transaction
