@@ -1,6 +1,6 @@
 const express = require('express');
 const categoryRouter = express.Router();
-const pool = require("../db")
+const pool = require("../db");
 
 // utils import
 const {
