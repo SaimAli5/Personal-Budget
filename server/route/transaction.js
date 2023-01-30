@@ -13,7 +13,7 @@ transactionRouter.get("/", getTransactions);
  
 transactionRouter.post("/", addTransaction);
 
-// transactionRouter.put("/:transactionId", updateTransactionById);
+transactionRouter.put("/:transactionId", updateTransactionById); //{currently not operational}
 
 transactionRouter.delete("/:transactionId", deleteTransactionById);
 
