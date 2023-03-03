@@ -10,8 +10,8 @@ app.use(bodyParser.json());
 
 // Import & mount API router 
 const apiRouter = require('./server/api');
-app.use("/API", apiRouter);
+app.use("/", apiRouter);
 
 app.listen(PORT, ()=>{
-    console.log(`Server is running on port:${PORT}`)
+    console.log(`Server is running on port: ${PORT}`)
 })

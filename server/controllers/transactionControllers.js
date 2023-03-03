@@ -43,22 +43,23 @@ const addTransaction = async (req, res, next) =>{
   }
 };
 
-// PUT /transactions/:transactionId {currently not operational}
+// PUT /transactions/:transactionId 
 const updateTransactionById = async (req, res, next) =>{ 
     const transactionId = req.params.transactionId;
     const {id, date, category_id, payment} = req.body;
     const updateTransactionQuery = `UPDATE transaction
       SET id = ${id}, date = '${date}', category_id = ${category_id}, payment = ${payment} 
       WHERE id = ${transactionId} RETURNING *`
-    const transactionToSubtract = `SELECT payment - ${payment} FROM transaction WHERE id = ${id}`
-    const transactionToAdd = `SELECT ${payment} - payment FROM transaction WHERE id = ${id}`
+    const transactionToSubtract = await pool.query(`SELECT payment - ${payment} AS payment FROM transaction WHERE id = ${id}`);
+    const transactionToAdd = await pool.query(`SELECT ${payment} - payment AS payment FROM transaction WHERE id = ${id}`);
+    const idMatchQuery = await pool.query(`SELECT payment FROM transaction WHERE id = ${id}`);
     const updateCategoryQuery = `UPDATE spending_category
     SET budget = 
     CASE 
-        WHEN (SELECT payment FROM transaction WHERE id = ${id}) < ${payment} 
-        THEN budget - (SELECT payment - ${payment} FROM transaction WHERE id = ${id})
-        WHEN (SELECT payment FROM transaction WHERE id = ${id}) > ${payment}
-        THEN budget + (SELECT ${payment} - payment FROM transaction WHERE id = ${id})
+        WHEN ${idMatchQuery.rows[0].payment} < ${payment} 
+        THEN budget - ${transactionToSubtract.rows[0].payment}
+        WHEN ${idMatchQuery.rows[0].payment} > ${payment}
+        THEN budget + ${transactionToAdd.rows[0].payment}
         ELSE budget + 2
     END
     WHERE spending_category.id = ${category_id}`
@@ -68,7 +69,7 @@ const updateTransactionById = async (req, res, next) =>{
        res.send({
            status: "Success",
            message: "Transaction updated",
-           data: updatedTransaction.rows
+           data: updatedTransaction.rows[0].payment
            })
        await pool.query(updateCategoryQuery);
   } catch (err){
