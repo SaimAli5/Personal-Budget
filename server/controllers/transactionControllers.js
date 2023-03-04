@@ -47,12 +47,16 @@ const addTransaction = async (req, res, next) =>{
 const updateTransactionById = async (req, res, next) =>{ 
     const transactionId = req.params.transactionId;
     const {id, date, category_id, payment} = req.body;
+    
     const updateTransactionQuery = `UPDATE transaction
       SET id = ${id}, date = '${date}', category_id = ${category_id}, payment = ${payment} 
       WHERE id = ${transactionId} RETURNING *`
+
+    // Helper queries for updating spending-category related to transaction
     const transactionToSubtract = await pool.query(`SELECT payment - ${payment} AS payment FROM transaction WHERE id = ${id}`);
     const transactionToAdd = await pool.query(`SELECT ${payment} - payment AS payment FROM transaction WHERE id = ${id}`);
     const idMatchQuery = await pool.query(`SELECT payment FROM transaction WHERE id = ${id}`);
+
     const updateCategoryQuery = `UPDATE spending_category
     SET budget = 
     CASE 
